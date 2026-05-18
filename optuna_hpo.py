@@ -4,7 +4,6 @@ import os
 import pandas as pd
 import numpy as np
 from datetime import datetime
-import joblib
 
 # --- CONFIGURATION ---
 STUDY_NAME = "UCT_RBQL_FrozenLake_Optimization"
@@ -17,7 +16,7 @@ BASE_CONFIG = {
     "is_slippery": True,
     "map_name": "4x4",
     "agent": "UCT-RBQL",
-    "total_episodes": 5000,
+    "total_episodes": 2000,
     "max_steps_per_episode": 200,
     "render": False,
     "seed": 42
