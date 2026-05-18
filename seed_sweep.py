@@ -10,36 +10,13 @@ import main # Wir importieren die train-Funktion
 # --- 1. DEFINIERE DIE CHAMPION-KONFIGURATIONEN ---
 # Hier trägst du die besten Hyperparameter ein, die du für jeden Agenten gefunden hast.
 CHAMPION_CONFIGS = {
-    "Dyna_T_4x4_Slippery_CHAMPION": {
-        "env_name": "FrozenLake-v1", "is_slippery": True, "map_name": "4x4",
-        "agent": "Dyna-T",
-        "total_episodes": 5000, "max_steps_per_episode": 200,
-        "learning_rate": 0.05, "planning_steps": 50, "exploration_constant_c": 0.2,
-        "discount_rate": 0.99, "render": False,
-    },
-    "Q_Learning_4x4_Slippery_CHAMPION": {
-        "env_name": "FrozenLake-v1", "is_slippery": True, "map_name": "4x4",
-        "agent": "Q-Learning",
-        "total_episodes": 10000, "max_steps_per_episode": 200,
-        "learning_rate": 0.05, "discount_rate": 0.99,
-        "max_epsilon": 1.0, "min_epsilon": 0.01, "epsilon_decay_rate": 0.0002,
-        "render": False,
-    },
-    # NEU: Der Champion für StochasticRBQL, basierend auf Ihren Sweep-Ergebnissen
-    "StochasticRBQL_4x4_Slippery_CHAMPION": {
-        "env_name": "FrozenLake-v1", "is_slippery": True, "map_name": "4x4",
-        "agent": "StochasticRBQL",
-        "total_episodes": 5000, "max_steps_per_episode": 200,
-        "discount_rate": 0.99, "max_epsilon": 1.0, "min_epsilon": 0.05,
-        "epsilon_decay_rate": 0.001, # Der Gewinner Ihres Sweeps
-        "render": False,
-    },
+    
     "UCT_RBQL_4x4_Slippery": {
         "env_name": "FrozenLake-v1", "is_slippery": True, "map_name": "4x4",
         "agent": "UCT-RBQL",  # Wähle den neuen Agenten
         "total_episodes": 5000, "max_steps_per_episode": 200,
         "discount_rate": 0.99,
-        "exploration_constant_c": 0.1, # Der neue, wichtige Hyperparameter!
+        "exploration_constant_c": 0.135, # Der neue, wichtige Hyperparameter!
         "render": False,
     },
 }

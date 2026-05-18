@@ -14,11 +14,9 @@ from agents.dyna_t_agent import DynaTAgent
 from agents.stochastic_rbql_agent import StochasticRBQLAgent
 from agents.uct_rbql_agent import UCTRBQLAgent
 
-
 from utils import plot_results
 
 # --- Konfigurations-Bibliothek für EINZELNE Läufe ---
-# Dient als Referenz und für schnelle Tests. Die Sweeps definieren ihre eigenen Konfigurationen.
 CONFIGS = {
     "Dyna_T_4x4_Slippery_CHAMPION": {
         "env_name": "FrozenLake-v1", "is_slippery": True, "map_name": "4x4",
@@ -36,14 +34,13 @@ CONFIGS = {
     },
     "UCT_RBQL_4x4_Slippery": {
         "env_name": "FrozenLake-v1", "is_slippery": True, "map_name": "4x4",
-        "agent": "UCT-RBQL",  # Wähle den neuen Agenten
-        "total_episodes": 5000, "max_steps_per_episode": 200,
+        "agent": "UCT-RBQL",
+        "total_episodes": 2000, "max_steps_per_episode": 200,
         "discount_rate": 0.99,
         "exploration_constant_c": 0.1,
         "render": False,
     },
 }
-
 
 def setup_experiment(run_name, config):
     results_dir = os.path.join("results", run_name)
@@ -57,7 +54,8 @@ def setup_experiment(run_name, config):
     print(f"Ergebnisse werden in '{results_dir}' gespeichert.")
     return results_dir, csv_writer, csv_file
 
-def train(run_name, config):
+# NEU: trial=None als optionaler Parameter hinzugefügt
+def train(run_name, config, trial=None):
     start_time = time.time()
     
     seed = config.get('seed')
@@ -74,7 +72,6 @@ def train(run_name, config):
         render_mode="human" if config.get("render", False) else None
     )
     
-    # --- ERWEITERTE AGENTEN-AUSWAHL ---
     agent_name = config["agent"]
     if agent_name == "Dyna-T":
         agent = DynaTAgent(env.observation_space, env.action_space, config)
@@ -109,11 +106,14 @@ def train(run_name, config):
         rewards_per_episode.append(episode_reward)
         csv_writer.writerow([episode, step + 1, episode_reward])
         
-        if (episode + 1) % 500 == 0:
+        if (episode + 1) % 100 == 0:
             avg_reward = np.mean(rewards_per_episode[-100:])
-            print(f"  {run_name} - Episode {episode + 1}: Avg Reward (last 100) = {avg_reward:.3f}")
-
+            print(f"  {run_name} - Episode {episode + 1}: Avg Reward (last 100) = {avg_reward:.4f}")
             
+            # NEU: Reiche den Zwischenstand live an Optuna weiter, falls aktiv
+            if trial is not None:
+                trial.report(avg_reward, step=episode + 1)
+
     env.close()
     csv_file.close()
     
@@ -121,13 +121,14 @@ def train(run_name, config):
     duration_seconds = end_time - start_time
     
     print(f"--- Training für {run_name} abgeschlossen in {duration_seconds:.2f} Sekunden ---")
-    plot_results(results_dir, config)
+    
+    # AUSGEKOMMENTIERT: Verhindert den Matplotlib/Tkinter GUI Thread-Absturz
+    # plot_results(results_dir, config)
     
     return results_dir, duration_seconds
 
 if __name__ == "__main__":
-    # Dieser Block ist jetzt nur für schnelle, einzelne Testläufe
-    config_name = "UCT_RBQL_4x4_Slippery" # Beispiel
+    config_name = "UCT_RBQL_4x4_Slippery"
     config_to_run = CONFIGS[config_name]
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     run_name = f"{config_name}_{timestamp}"

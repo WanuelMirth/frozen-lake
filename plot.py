@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import argparse
 import os
 
-def generate_smooth_plot(csv_path, window_size=200):
+def generate_smooth_plot(csv_path, window_size=500):
     """
     Liest eine aggregierte CSV-Datei, glättet die mittlere Belohnung und erstellt
     einen visuell aussagekräftigen Vergleich, der die schnelle Konvergenz des
@@ -74,7 +74,7 @@ def generate_smooth_plot(csv_path, window_size=200):
         ax.legend(loc='lower right')
         fig.tight_layout()
         
-        new_plot_path = csv_path.replace('.csv', '_comparison_plot.png')
+        new_plot_path = csv_path.replace('.csv', '_comparison_plot3.png')
         fig.savefig(new_plot_path, bbox_inches='tight')
         print(f"\nVergleichs-Plot der Ergebnisse gespeichert unter: {new_plot_path}")
         plt.close(fig)

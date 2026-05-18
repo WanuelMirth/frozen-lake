@@ -1,5 +1,7 @@
 # utils.py
 import pandas as pd
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 def plot_results(results_dir, config):
@@ -10,7 +12,13 @@ def plot_results(results_dir, config):
             print("Metriken-Datei ist leer, kein Plot wird erstellt.")
             return
 
-        plt.style.use('seaborn-v0_8-whitegrid')
+        try:
+            plt.style.use('seaborn-v0_8-whitegrid')
+        except:
+            try:
+                plt.style.use('ggplot')
+            except:
+                plt.style.use('default')
         fig, ax = plt.subplots(figsize=(12, 8))
 
         # Plot der rohen Belohnungen pro Episode
