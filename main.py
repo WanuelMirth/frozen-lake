@@ -106,13 +106,10 @@ def train(run_name, config, trial=None):
         rewards_per_episode.append(episode_reward)
         csv_writer.writerow([episode, step + 1, episode_reward])
         
-        if (episode + 1) % 100 == 0:
+        if (episode + 1) % 500 == 0:
             avg_reward = np.mean(rewards_per_episode[-100:])
             print(f"  {run_name} - Episode {episode + 1}: Avg Reward (last 100) = {avg_reward:.4f}")
             
-            # NEU: Reiche den Zwischenstand live an Optuna weiter, falls aktiv
-            if trial is not None:
-                trial.report(avg_reward, step=episode + 1)
 
     env.close()
     csv_file.close()

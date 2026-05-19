@@ -13,7 +13,7 @@
 
 ## 2. Phase 1 Bootstrapping (Warmstart Data)
 
-We have completed a baseline 100-trial single-objective run using **Seed 42** (stored in the local baseline database sqlite:///UCT_RBQL_Multi_Objective.db). To speed up the new Multi-Objective run, we inject the best parameters from Phase 1 as the initial trials.
+We have completed a baseline 100-trial single-objective run using **Seed 42**. To speed up the new Multi-Objective run, we inject the best parameters from Phase 1 as the initial trials.
 --- Optimization Finished ---
 Best trial: 21
   Value: 0.74
