@@ -27,14 +27,14 @@ def generate_individual_plot(csv_path, window_size=100):
         plt.style.use('seaborn-v0_8-whitegrid')
         fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
 
-        is_target_run = 'Deep_Pareto_Trial74' in csv_path or 'Deep_Pareto_Trial92' in csv_path
+        is_target_run = 'Pareto_Trial74' in csv_path or 'Pareto_Trial92' in csv_path
 
         final_perf = df['smoothed_mean'].iloc[-1000:].mean()
 
-        if 'Deep_Pareto_Trial74' in csv_path:
+        if 'Pareto_Trial74' in csv_path:
             color = 'teal'
             label = f'Success Rate (Avg Last 1000 Ep: {final_perf:.4f})'
-        elif 'Deep_Pareto_Trial92' in csv_path:
+        elif 'Pareto_Trial92' in csv_path:
             color = 'crimson'
             label = f'Success Rate (Avg Last 1000 Ep: {final_perf:.4f})'
         else:

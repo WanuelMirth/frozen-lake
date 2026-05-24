@@ -7,7 +7,7 @@ import json
 import csv
 from datetime import datetime
 import random
-from agents.uct_rbql_deep_agent import UCTRBQLDeepAgent
+from agents.quest_agent import QUESTAgent
 
 def setup_experiment(run_name, config):
     results_dir = os.path.join("results", run_name)
@@ -38,7 +38,7 @@ def train(run_name, config, trial=None):
         render_mode="human" if config.get("render", False) else None
     )
     
-    agent = UCTRBQLDeepAgent(env.observation_space, env.action_space, config)
+    agent = QUESTAgent(env.observation_space, env.action_space, config)
         
     rewards_per_episode = []
     
@@ -78,22 +78,22 @@ def train(run_name, config, trial=None):
     return results_dir, duration_seconds
 
 CONFIGS = {
-    "UCT_RBQL_Deep_Pareto_Trial74": {
+    "QUEST_Pareto_Trial74": {
         "env_name": "FrozenLake-v1",
         "is_slippery": True,
         "map_name": "4x4",
-        "agent": "UCT-RBQL-Deep",
+        "agent": "QUEST",
         "total_episodes": 5000,
         "max_steps_per_episode": 200,
         "discount_rate": 0.9926714709783417,
         "exploration_constant_c": 0.059991060225751965,
         "render": False,
     },
-    "UCT_RBQL_Deep_Pareto_Trial92": {
+    "QUEST_Pareto_Trial92": {
         "env_name": "FrozenLake-v1",
         "is_slippery": True,
         "map_name": "4x4",
-        "agent": "UCT-RBQL-Deep",
+        "agent": "QUEST",
         "total_episodes": 5000,
         "max_steps_per_episode": 200,
         "discount_rate": 0.9843205299768125,
@@ -103,7 +103,7 @@ CONFIGS = {
 }
 
 if __name__ == "__main__":
-    config_name = "UCT_RBQL_Deep_Pareto_Trial74"
+    config_name = "QUEST_Pareto_Trial74"
     config_to_run = CONFIGS[config_name]
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     run_name = f"{config_name}_{timestamp}"

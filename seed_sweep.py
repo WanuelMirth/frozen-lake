@@ -8,22 +8,22 @@ import main # Import train function
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 CHAMPION_CONFIGS = {
-    "UCT_RBQL_Deep_Pareto_Trial74": {
+    "QUEST_Pareto_Trial74": {
         "env_name": "FrozenLake-v1",
         "is_slippery": True,
         "map_name": "4x4",
-        "agent": "UCT-RBQL-Deep",
+        "agent": "QUEST",
         "total_episodes": 5000,
         "max_steps_per_episode": 200,
         "discount_rate": 0.9926714709783417,
         "exploration_constant_c": 0.059991060225751965,
         "render": False,
     },
-    "UCT_RBQL_Deep_Pareto_Trial92": {
+    "QUEST_Pareto_Trial92": {
         "env_name": "FrozenLake-v1",
         "is_slippery": True,
         "map_name": "4x4",
-        "agent": "UCT-RBQL-Deep",
+        "agent": "QUEST",
         "total_episodes": 5000,
         "max_steps_per_episode": 200,
         "discount_rate": 0.9843205299768125,
@@ -101,8 +101,8 @@ def aggregate_results(all_dirs, base_run_name):
 
 if __name__ == "__main__":
     configs_to_run = [
-        "UCT_RBQL_Deep_Pareto_Trial74",
-        "UCT_RBQL_Deep_Pareto_Trial92"
+        "QUEST_Pareto_Trial74",
+        "QUEST_Pareto_Trial92"
     ]
     
     for config_name in configs_to_run:

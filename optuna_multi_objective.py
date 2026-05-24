@@ -7,7 +7,7 @@ import numpy as np
 from datetime import datetime
 
 # --- CONFIGURATION ---
-STUDY_NAME = "UCT_RBQL_Multi_Objective"
+STUDY_NAME = "QUEST_Multi_Objective"
 # Using a local journal log file instead of an SQLite database
 JOURNAL_PATH = f"./{STUDY_NAME}.log"
 
@@ -20,7 +20,7 @@ BASE_CONFIG = {
     "env_name": "FrozenLake-v1",
     "is_slippery": True,
     "map_name": "4x4",
-    "agent": "UCT-RBQL",
+    "agent": "QUEST",
     "total_episodes": 2000,
     "max_steps_per_episode": 200,
     "render": False,

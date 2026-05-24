@@ -23,7 +23,7 @@ TODO
 
 To run the Optuna dashboard locally:
 ```bash
-uvx optuna-dashboard UCT_RBQL_Multi_Objective.log
+uvx optuna-dashboard QUEST_Multi_Objective.log
 ```
 
 Hyperparameter Optimization (HPO) was performed over 3 Seeds (111, 222, 333) for 100 Trials using **Optuna** to optimize two conflicting objectives:
