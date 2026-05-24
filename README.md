@@ -20,7 +20,6 @@
 TODO
 
 ## 3. Multi-Objective HPO (Optuna)
-
 To run the Optuna dashboard locally:
 ```bash
 uvx optuna-dashboard QUEST_Multi_Objective.log
@@ -28,7 +27,11 @@ uvx optuna-dashboard QUEST_Multi_Objective.log
 
 Hyperparameter Optimization (HPO) was performed over 3 Seeds (111, 222, 333) for 100 Trials using **Optuna** to optimize two conflicting objectives:
 1.  **Maximize Final Performance**: Mean reward of the last 1,000 episodes.
+![alt text](results/objective0.png)
 2.  **Minimize Convergence Speed**: Defined as the first episode where the 100-episode rolling success rate (average reward) crosses **0.70**.
+![alt text](results/objective1.png)
+
+
 
 
 ---
@@ -43,7 +46,9 @@ Evaluation across 25 independent seeds showed the following robust metrics for t
 | **Trial 92** | $0.0990$ | $0.9843$ | **254** | **0.7342** |
 
 *   **Trial 92** generalizes exceptionally well, achieving both faster convergence (**254 episodes**) and a higher final average reward (**0.7342**).
+![alt text](results/AGGREGATED_QUEST_Pareto_Trial92_smooth_plot.png)
 *   **Trial 74** converges in **314 episodes** with a final average reward of **0.7287**.
+![alt text](results/AGGREGATED_QUEST_Pareto_Trial74_smooth_plot.png)
 
 ---
 
