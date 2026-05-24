@@ -7,40 +7,7 @@ import json
 import csv
 from datetime import datetime
 import random
-
-# Importiere ALLE Agenten, die wir jemals verwenden wollen
-from agents.q_learning_agent import QLearningAgent
-from agents.dyna_t_agent import DynaTAgent
-from agents.stochastic_rbql_agent import StochasticRBQLAgent
-from agents.uct_rbql_agent import UCTRBQLAgent
-
-from utils import plot_results
-
-# --- Konfigurations-Bibliothek für EINZELNE Läufe ---
-CONFIGS = {
-    "Dyna_T_4x4_Slippery_CHAMPION": {
-        "env_name": "FrozenLake-v1", "is_slippery": True, "map_name": "4x4",
-        "agent": "Dyna-T", "total_episodes": 5000, "max_steps_per_episode": 200,
-        "learning_rate": 0.05, "planning_steps": 50, "exploration_constant_c": 0.2,
-        "discount_rate": 0.99, "render": False,
-    },
-    "StochasticRBQL2_4x4_Slippery_CHAMPION": {
-        "env_name": "FrozenLake-v1", "is_slippery": True, "map_name": "4x4",
-        "agent": "StochasticRBQL",
-        "total_episodes": 5000, "max_steps_per_episode": 200,
-        "discount_rate": 0.99, "max_epsilon": 1.0, "min_epsilon": 0.05,
-        "epsilon_decay_rate": 0.0005,
-        "render": False,
-    },
-    "UCT_RBQL_4x4_Slippery": {
-        "env_name": "FrozenLake-v1", "is_slippery": True, "map_name": "4x4",
-        "agent": "UCT-RBQL",
-        "total_episodes": 2000, "max_steps_per_episode": 200,
-        "discount_rate": 0.99,
-        "exploration_constant_c": 0.1,
-        "render": False,
-    },
-}
+from agents.uct_rbql_deep_agent import UCTRBQLDeepAgent
 
 def setup_experiment(run_name, config):
     results_dir = os.path.join("results", run_name)
@@ -50,11 +17,10 @@ def setup_experiment(run_name, config):
     csv_file = open(f"{results_dir}/metrics.csv", 'w', newline='')
     csv_writer = csv.writer(csv_file)
     csv_writer.writerow(['episode', 'steps', 'reward'])
-    print(f"Starte Experiment: {run_name}")
-    print(f"Ergebnisse werden in '{results_dir}' gespeichert.")
+    print(f"Starting Experiment: {run_name}")
+    print(f"Results will be saved in '{results_dir}'.")
     return results_dir, csv_writer, csv_file
 
-# NEU: trial=None als optionaler Parameter hinzugefügt
 def train(run_name, config, trial=None):
     start_time = time.time()
     
@@ -72,17 +38,7 @@ def train(run_name, config, trial=None):
         render_mode="human" if config.get("render", False) else None
     )
     
-    agent_name = config["agent"]
-    if agent_name == "Dyna-T":
-        agent = DynaTAgent(env.observation_space, env.action_space, config)
-    elif agent_name == "StochasticRBQL":
-        agent = StochasticRBQLAgent(env.observation_space, env.action_space, config)
-    elif agent_name == "UCT-RBQL":
-        agent = UCTRBQLAgent(env.observation_space, env.action_space, config)
-    elif agent_name == "Q-Learning":
-        agent = QLearningAgent(env.observation_space, env.action_space, config)
-    else:
-        raise ValueError(f"Unbekannter Agent in Konfiguration: {agent_name}")
+    agent = UCTRBQLDeepAgent(env.observation_space, env.action_space, config)
         
     rewards_per_episode = []
     
@@ -117,15 +73,37 @@ def train(run_name, config, trial=None):
     end_time = time.time()
     duration_seconds = end_time - start_time
     
-    print(f"--- Training für {run_name} abgeschlossen in {duration_seconds:.2f} Sekunden ---")
-    
-    # AUSGEKOMMENTIERT: Verhindert den Matplotlib/Tkinter GUI Thread-Absturz
-    # plot_results(results_dir, config)
+    print(f"--- Training for {run_name} completed in {duration_seconds:.2f} seconds ---")
     
     return results_dir, duration_seconds
 
+CONFIGS = {
+    "UCT_RBQL_Deep_Pareto_Trial74": {
+        "env_name": "FrozenLake-v1",
+        "is_slippery": True,
+        "map_name": "4x4",
+        "agent": "UCT-RBQL-Deep",
+        "total_episodes": 5000,
+        "max_steps_per_episode": 200,
+        "discount_rate": 0.9926714709783417,
+        "exploration_constant_c": 0.059991060225751965,
+        "render": False,
+    },
+    "UCT_RBQL_Deep_Pareto_Trial92": {
+        "env_name": "FrozenLake-v1",
+        "is_slippery": True,
+        "map_name": "4x4",
+        "agent": "UCT-RBQL-Deep",
+        "total_episodes": 5000,
+        "max_steps_per_episode": 200,
+        "discount_rate": 0.9843205299768125,
+        "exploration_constant_c": 0.09900852192118169,
+        "render": False,
+    }
+}
+
 if __name__ == "__main__":
-    config_name = "UCT_RBQL_4x4_Slippery"
+    config_name = "UCT_RBQL_Deep_Pareto_Trial74"
     config_to_run = CONFIGS[config_name]
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     run_name = f"{config_name}_{timestamp}"

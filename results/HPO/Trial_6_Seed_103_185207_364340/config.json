@@ -1,0 +1,13 @@
+{
+    "env_name": "FrozenLake-v1",
+    "is_slippery": true,
+    "map_name": "4x4",
+    "agent": "UCT-RBQL",
+    "total_episodes": 2000,
+    "max_steps_per_episode": 200,
+    "render": false,
+    "exploration_constant_c": 0.10275234553758288,
+    "discount_rate": 0.997816899243102,
+    "planning_multiplier": 7,
+    "seed": 103
+}
