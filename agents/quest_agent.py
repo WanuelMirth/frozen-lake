@@ -7,13 +7,10 @@ class QUESTAgent:
         self.n_actions = action_space.n
         self.discount_rate = params["discount_rate"]
         
-        # --- Q-TABLE AND MODEL REMAIN THE SAME ---
         self.q_table = {} 
         self.model = {}
         self.rewards = {}
         
-        # --- UCT / QUEST COMPONENTS ---
-        # Replace Epsilon with visit counts and an exploration constant
         self.n_s = {}  # Counts visits to state s: N(s)
         self.n_sa = {} # Counts execution of action a in state s: N(s,a)
         # c is a hyperparameter controlling agent curiosity
@@ -40,7 +37,7 @@ class QUESTAgent:
             if self.n_sa[state][action] == 0:
                 return action
             
-            # 1. Exploitation term: Use knowledge from the Q-table (learned via RBQL)
+            # 1. Exploitation term: Use knowledge from the Q-table (learned)
             exploitation_term = q_values[action]
             
             # 2. Exploration term: Be curious about less frequently chosen actions
@@ -49,11 +46,11 @@ class QUESTAgent:
             
             uct_values[action] = exploitation_term + exploration_term
             
-        # Select the action with the highest UCT value
+        # Select the action with the highest UCB value
         return np.argmax(uct_values)
 
     def learn(self, state, action, reward, new_state):
-        # --- MODEL UPDATE (remains unchanged) ---
+        # --- MODEL UPDATE ---
         if state not in self.model:
             self.model[state] = {a: {} for a in range(self.n_actions)}
             self.rewards[state] = {a: {} for a in range(self.n_actions)}
@@ -65,24 +62,21 @@ class QUESTAgent:
             self.rewards[state][action][new_state] = []
         self.rewards[state][action][new_state].append(reward)
 
-        # --- VISIT COUNTER UPDATE FOR UCT ---
+        # --- VISIT COUNTER UPDATE FOR UCB ---
         self.n_s[state] = self.n_s.get(state, 0) + 1
         if state not in self.n_sa:
              self.n_sa[state] = np.zeros(self.n_actions)
         self.n_sa[state][action] += 1
 
     def on_episode_end(self, episode, episode_reward):
-        # The logic is radically simplified: only perform backward learning.
-        # No epsilon decay or goal-finding flags needed.
         self._learn_backwards()
 
     def _learn_backwards(self):
         all_known_states = set(self.model.keys())
         
-        # Iterate enough times to guarantee convergence (increased from *2 to *5)
+        # Iterate enough times to guarantee convergence
         for _ in range(len(all_known_states) * 5): 
             for state in self.model:
-                # IMPORTANT FIX: Iterate over ALL actions, not just visited ones
                 for action in range(self.n_actions):
                     
                     if action not in self.model[state] or not self.model[state][action]:
