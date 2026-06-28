@@ -26,7 +26,7 @@ class QUESTAgent:
         if state not in self.n_s:
             self.n_s[state] = 0
             self.n_sa[state] = np.zeros(self.n_actions)
-            return self.action_space.sample()
+            return np.random.randint(self.n_actions)
 
         uct_values = np.zeros(self.n_actions)
         q_values = self._get_q_values(state)
@@ -58,9 +58,8 @@ class QUESTAgent:
         outcomes = self.model[state][action]
         outcomes[new_state] = outcomes.get(new_state, 0) + 1
         
-        if new_state not in self.rewards[state][action]:
-            self.rewards[state][action][new_state] = []
-        self.rewards[state][action][new_state].append(reward)
+        # Optimize reward tracking: store directly as float scalar (no list append)
+        self.rewards[state][action][new_state] = float(reward)
 
         # --- VISIT COUNTER UPDATE FOR UCB ---
         self.n_s[state] = self.n_s.get(state, 0) + 1
@@ -72,11 +71,17 @@ class QUESTAgent:
         self._learn_backwards()
 
     def _learn_backwards(self):
-        all_known_states = set(self.model.keys())
+        all_known_states = list(self.model.keys())
+        if not all_known_states:
+            return
+            
+        # Iterate enough times to guarantee convergence, with early stopping
+        theta = 1e-4
+        max_iterations = len(all_known_states) * 5
         
-        # Iterate enough times to guarantee convergence
-        for _ in range(len(all_known_states) * 5): 
-            for state in self.model:
+        for _ in range(max_iterations):
+            max_delta = 0
+            for state in all_known_states:
                 for action in range(self.n_actions):
                     
                     if action not in self.model[state] or not self.model[state][action]:
@@ -90,11 +95,18 @@ class QUESTAgent:
                     expected_q_value = 0
                     for next_state, count in outcomes.items():
                         probability = count / total_transitions
-                        avg_reward = np.mean(self.rewards[state][action][next_state])
+                        # Direct lookup (avoids slow np.mean call)
+                        avg_reward = self.rewards[state][action][next_state]
                         next_max = np.max(self._get_q_values(next_state))
                         branch_value = probability * (avg_reward + self.discount_rate * next_max)
                         expected_q_value += branch_value
                     
                     if state not in self.q_table:
                         self.q_table[state] = np.zeros(self.n_actions)
+                        
+                    old_val = self.q_table[state][action]
                     self.q_table[state][action] = expected_q_value
+                    max_delta = max(max_delta, abs(old_val - expected_q_value))
+                    
+            if max_delta < theta:
+                break

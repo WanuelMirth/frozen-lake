@@ -27,15 +27,24 @@ def generate_individual_plot(csv_path, window_size=100):
         plt.style.use('seaborn-v0_8-whitegrid')
         fig, ax = plt.subplots(figsize=(10, 6), dpi=300)
 
-        is_target_run = 'Pareto_Trial74' in csv_path or 'Pareto_Trial92' in csv_path
+        is_target_run = any(x in csv_path for x in ['Pareto_Trial74', 'Pareto_Trial92', 'Pareto_Trial32', 'Pareto_Trial51', 'Pareto_Trial84', 'Pareto_Trial80', 'Pareto_Trial17', 'Pareto_Trial99', 'Pareto_Trial79', 'Pareto_Trial67', '8x8_Trial92', 'Gamma995'])
 
         final_perf = df['smoothed_mean'].iloc[-1000:].mean()
 
-        if 'Pareto_Trial74' in csv_path:
+        if 'Pareto_Trial74' in csv_path or 'Pareto_Trial32' in csv_path or 'Pareto_Trial80' in csv_path or 'Gamma995' in csv_path:
             color = 'teal'
             label = f'Success Rate (Avg Last 1000 Ep: {final_perf:.4f})'
-        elif 'Pareto_Trial92' in csv_path:
+        elif 'Pareto_Trial92' in csv_path or 'Pareto_Trial51' in csv_path or 'Pareto_Trial99' in csv_path or '8x8_Trial92' in csv_path:
             color = 'crimson'
+            label = f'Success Rate (Avg Last 1000 Ep: {final_perf:.4f})'
+        elif 'Pareto_Trial84' in csv_path or 'Pareto_Trial17' in csv_path:
+            color = 'forestgreen'
+            label = f'Success Rate (Avg Last 1000 Ep: {final_perf:.4f})'
+        elif 'Pareto_Trial79' in csv_path:
+            color = 'darkorange'
+            label = f'Success Rate (Avg Last 1000 Ep: {final_perf:.4f})'
+        elif 'Pareto_Trial67' in csv_path:
+            color = 'darkviolet'
             label = f'Success Rate (Avg Last 1000 Ep: {final_perf:.4f})'
         else:
             color = 'royalblue'
@@ -45,10 +54,31 @@ def generate_individual_plot(csv_path, window_size=100):
         line_label = label if is_target_run else f'{label} (Mean)'
         ax.plot(df['episode'], df['smoothed_mean'], color=color, linewidth=2, label=line_label)
 
-
-
         if is_target_run:
-            title_label = label
+            if 'Pareto_Trial32' in csv_path:
+                title_label = "QUEST (Trial 32 - High Performance)"
+            elif 'Pareto_Trial51' in csv_path:
+                title_label = "QUEST (Trial 51 - Fast Convergence)"
+            elif 'Pareto_Trial84' in csv_path:
+                title_label = "QUEST (Trial 84 - Balanced Trade-off)"
+            elif 'Pareto_Trial80' in csv_path:
+                title_label = "QUEST 8x8 (Trial 80 - Best Candidate)"
+            elif 'Pareto_Trial99' in csv_path:
+                title_label = "QUEST 8x8 (Trial 99 - Candidate 2)"
+            elif 'Pareto_Trial17' in csv_path:
+                title_label = "QUEST 8x8 (Trial 17 - Candidate 1)"
+            elif 'Pareto_Trial79' in csv_path:
+                title_label = "QUEST 8x8 (Trial 79 - Candidate 3)"
+            elif 'Pareto_Trial67' in csv_path:
+                title_label = "QUEST 8x8 (Trial 67 - Candidate 4)"
+            elif '8x8_Trial92' in csv_path:
+                title_label = "QUEST 8x8 (Trial 92)"
+            elif 'Gamma995' in csv_path:
+                title_label = "QUEST 8x8 (Trial 92 - Gamma 995)"
+            elif 'Pareto_Trial74' in csv_path:
+                title_label = "QUEST (Trial 74)"
+            else:
+                title_label = "QUEST (Trial 92)"
         else:
             title_label = label + " (25 Seeds)"
         ax.set_title(f"Learning Curve: {title_label}", fontsize=14, pad=15)
@@ -57,13 +87,24 @@ def generate_individual_plot(csv_path, window_size=100):
         ax.set_ylim(-0.05, 1.05)
 
         if is_target_run:
-            # Mark the convergence episode on x axis
-            cross_indices = df[df['smoothed_mean'] >= 0.7].index
+            # Mark the convergence episode on x axis (85% for 8x8, 70% for 4x4)
+            threshold = 0.85 if '8x8' in csv_path else 0.70
+            cross_indices = df[df['smoothed_mean'] >= threshold].index
             conv_ep = int(df.loc[cross_indices[0], 'episode']) if len(cross_indices) > 0 else 254
-            ax.axvline(x=conv_ep, color='dimgray', linestyle=':', alpha=0.8, label=f'Convergence: Ep {conv_ep}')
+            ax.axvline(x=conv_ep, color='dimgray', linestyle=':', alpha=0.8, label=f'Convergence ({int(threshold*100)}%): Ep {conv_ep}')
             # Update xticks to include conv_ep and prevent overlapping text
-            current_ticks = [0, 1000, 2000, 3000, 4000, 5000]
-            new_ticks = [t for t in current_ticks if abs(t - conv_ep) > 250]
+            max_ep = df['episode'].max()
+            if max_ep <= 5000:
+                current_ticks = [0, 1000, 2000, 3000, 4000, 5000]
+                tick_spacing = 50
+            elif max_ep <= 10000:
+                current_ticks = [0, 2000, 4000, 6000, 8000, 10000]
+                tick_spacing = 100
+            else:
+                current_ticks = list(range(0, int(max_ep) + 1, 5000))
+                tick_spacing = 200
+                
+            new_ticks = [t for t in current_ticks if abs(t - conv_ep) > tick_spacing]
             new_ticks.append(conv_ep)
             ax.set_xticks(sorted(new_ticks))
 

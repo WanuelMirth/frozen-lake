@@ -1,0 +1,12 @@
+{
+    "env_name": "FrozenLake-v1",
+    "is_slippery": true,
+    "map_name": "4x4",
+    "agent": "QUEST",
+    "total_episodes": 2000,
+    "max_steps_per_episode": 100,
+    "render": false,
+    "exploration_constant_c": 0.2446045675786138,
+    "discount_rate": 0.9186238895090938,
+    "seed": 111
+}

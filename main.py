@@ -35,7 +35,8 @@ def train(run_name, config, trial=None):
         config["env_name"], 
         is_slippery=config["is_slippery"], 
         map_name=config["map_name"],
-        render_mode="human" if config.get("render", False) else None
+        render_mode="human" if config.get("render", False) else None,
+        max_episode_steps=config.get("max_steps_per_episode", 100)
     )
     
     agent = QUESTAgent(env.observation_space, env.action_space, config)

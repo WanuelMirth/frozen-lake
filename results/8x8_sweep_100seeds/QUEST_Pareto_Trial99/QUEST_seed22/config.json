@@ -1,0 +1,11 @@
+{
+    "env_name": "FrozenLake-v1",
+    "is_slippery": true,
+    "map_name": "8x8",
+    "total_episodes": 5000,
+    "max_steps_per_episode": 200,
+    "discount_rate": 0.9988452099891397,
+    "exploration_constant_c": 0.01380488848357483,
+    "render": false,
+    "desc": "Trial 99: Candidate 2 (c=0.0138, gamma=0.9988)"
+}

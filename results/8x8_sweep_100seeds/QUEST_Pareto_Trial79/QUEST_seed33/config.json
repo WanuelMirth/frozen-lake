@@ -1,0 +1,11 @@
+{
+    "env_name": "FrozenLake-v1",
+    "is_slippery": true,
+    "map_name": "8x8",
+    "total_episodes": 5000,
+    "max_steps_per_episode": 200,
+    "discount_rate": 0.9954049752407006,
+    "exploration_constant_c": 0.018231869926747853,
+    "render": false,
+    "desc": "Trial 79: Candidate 3 (c=0.0182, gamma=0.9954)"
+}
