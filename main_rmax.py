@@ -1,0 +1,92 @@
+# main_rmax.py
+import gymnasium as gym
+import numpy as np
+import time
+import os
+import json
+import csv
+from datetime import datetime
+import random
+from agents.rmax_agent import RMaxAgent
+
+def setup_experiment(run_name, config):
+    results_dir = os.path.join("results", run_name)
+    os.makedirs(results_dir, exist_ok=True)
+    with open(f"{results_dir}/config.json", 'w') as f:
+        json.dump(config, f, indent=4)
+    csv_file = open(f"{results_dir}/metrics.csv", 'w', newline='')
+    csv_writer = csv.writer(csv_file)
+    csv_writer.writerow(['episode', 'steps', 'reward'])
+    print(f"Starting Experiment: {run_name}")
+    print(f"Results will be saved in '{results_dir}'.")
+    return results_dir, csv_writer, csv_file
+
+def train(run_name, config, trial=None):
+    start_time = time.time()
+    
+    seed = config.get('seed')
+    if seed is not None:
+        random.seed(seed)
+        np.random.seed(seed)
+
+    results_dir, csv_writer, csv_file = setup_experiment(run_name, config)
+    
+    env = gym.make(
+        config["env_name"], 
+        is_slippery=config["is_slippery"], 
+        map_name=config["map_name"],
+        render_mode="human" if config.get("render", False) else None,
+        max_episode_steps=config.get("max_steps_per_episode", 100)
+    )
+    
+    agent = RMaxAgent(env.observation_space, env.action_space, config)
+        
+    rewards_per_episode = []
+    
+    for episode in range(config["total_episodes"]):
+        current_seed = seed + episode if seed is not None else None
+        state, info = env.reset(seed=current_seed)
+
+        terminated, truncated = False, False
+        episode_reward = 0
+        
+        for step in range(config["max_steps_per_episode"]):
+            action = agent.choose_action(state)
+            new_state, reward, terminated, truncated, info = env.step(action)
+            episode_reward += reward
+            agent.learn(state, action, reward, new_state, terminated)
+            state = new_state
+            if config.get("render", False): time.sleep(config.get("render_sleep", 0.01))
+            if terminated or truncated: break
+        
+        agent.on_episode_end(episode, episode_reward)
+        rewards_per_episode.append(episode_reward)
+        csv_writer.writerow([episode, step + 1, episode_reward])
+        
+        if (episode + 1) % 500 == 0:
+            avg_reward = np.mean(rewards_per_episode[-100:])
+            print(f"  {run_name} - Episode {episode + 1}: Avg Reward (last 100) = {avg_reward:.4f}")
+
+    env.close()
+    csv_file.close()
+    
+    end_time = time.time()
+    duration_seconds = end_time - start_time
+    
+    print(f"--- Training for {run_name} completed in {duration_seconds:.2f} seconds ---")
+    
+    return results_dir, duration_seconds
+
+if __name__ == "__main__":
+    # Test train run with default config
+    config = {
+        "env_name": "FrozenLake-v1",
+        "is_slippery": True,
+        "map_name": "4x4",
+        "total_episodes": 2000,
+        "max_steps_per_episode": 100,
+        "discount_rate": 0.99,
+        "m": 5,
+        "seed": 42
+    }
+    train("rmax_test_run", config)

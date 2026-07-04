@@ -15,8 +15,9 @@ class QUESTAgent:
         self.n_sa = {} # Counts execution of action a in state s: N(s,a)
         # c is a hyperparameter controlling agent curiosity
         self.exploration_constant_c = params.get("exploration_constant_c", 1.4) 
+        self.max_iterations_multiplier = params.get("max_iterations_multiplier", 5)
         
-        print(f"QUEST Agent initialized with c={self.exploration_constant_c}.")
+        print(f"QUEST Agent initialized with c={self.exploration_constant_c}, iter_multiplier={self.max_iterations_multiplier}.")
 
     def _get_q_values(self, state):
         return self.q_table.get(state, np.zeros(self.n_actions))
@@ -77,7 +78,7 @@ class QUESTAgent:
             
         # Iterate enough times to guarantee convergence, with early stopping
         theta = 1e-4
-        max_iterations = len(all_known_states) * 5
+        max_iterations = len(all_known_states) * self.max_iterations_multiplier
         
         for _ in range(max_iterations):
             max_delta = 0
