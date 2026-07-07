@@ -84,8 +84,8 @@ While R-Max exhibits slightly higher sample efficiency (fewer training episodes)
 2. **The $V_{\max}$ Optimism Bottleneck**: R-Max initializes unknown states to $V_{\max} \approx 986.1$. During early exploration, propagating these massive values through the state space forces Value Iteration to run for an average of **65+ iterations per episode** to reach convergence.
 3. **QUEST's Zero-Q Initialization**: QUEST initializes the Q-table to $0$. Before the goal is reached, all Q-values are $0$, letting Value Iteration terminate in exactly **1.0 iteration** (taking $< 0.1$ ms). Once the goal is found, QUEST warm-starts and converges in $< 5$ iterations, avoiding $V_{\max}$ propagation completely.
 
-![Wall-Clock Time per Episode](results/hpo/plots/speed_time_per_episode.png)
-![Real-Time to Convergence](results/hpo/plots/speed_time_to_convergence.png)
+![Wall-Clock Time per Episode](results/plots/speed_time_per_episode.png)
+![Real-Time to Convergence](results/plots/speed_time_to_convergence.png)
 
 ---
 
