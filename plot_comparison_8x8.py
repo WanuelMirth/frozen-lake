@@ -32,12 +32,6 @@ def generate_comparison_plot():
     color_quest = 'crimson'
     color_rmax = 'royalblue'
     
-    # Plot curves
-    ax.plot(df_quest['episode'], df_quest['smoothed_mean'], color=color_quest, linewidth=2, 
-            label=f'QUEST (Trial 99) | Final Perf: {quest_perf*100:.2f}%')
-    ax.plot(df_rmax['episode'], df_rmax['smoothed_mean'], color=color_rmax, linewidth=2, 
-            label=f'R-Max (Best 8x8 Config) | Final Perf: {rmax_perf*100:.2f}%')
-            
     # Find convergence episodes (rolling 100-ep mean >= 85% for 8x8)
     threshold = 0.85
     
@@ -47,13 +41,21 @@ def generate_comparison_plot():
     rmax_cross = df_rmax[df_rmax['smoothed_mean'] >= threshold].index
     rmax_conv = int(df_rmax.loc[rmax_cross[0], 'episode']) if len(rmax_cross) > 0 else None
     
-    # Plot convergence vertical lines
-    if rmax_conv:
-        ax.axvline(x=rmax_conv, color=color_rmax, linestyle='--', linewidth=1.5, alpha=0.8, 
-                   label=f'R-Max Convergence (85%): Ep {rmax_conv}')
+    # Plot curves and convergence lines grouped by algorithm for clean legend order
+    # 1. QUEST Curve
+    ax.plot(df_quest['episode'], df_quest['smoothed_mean'], color=color_quest, linewidth=2, 
+            label=f'QUEST (Best 8x8 Config) | Final Perf: {quest_perf*100:.2f}%')
+    # 2. QUEST Convergence
     if quest_conv:
         ax.axvline(x=quest_conv, color=color_quest, linestyle='--', linewidth=1.5, alpha=0.8, 
                    label=f'QUEST Convergence (85%): Ep {quest_conv}')
+    # 3. R-Max Curve
+    ax.plot(df_rmax['episode'], df_rmax['smoothed_mean'], color=color_rmax, linewidth=2, 
+            label=f'R-Max (Best 8x8 Config) | Final Perf: {rmax_perf*100:.2f}%')
+    # 4. R-Max Convergence
+    if rmax_conv:
+        ax.axvline(x=rmax_conv, color=color_rmax, linestyle='--', linewidth=1.5, alpha=0.8, 
+                   label=f'R-Max Convergence (85%): Ep {rmax_conv}')
                    
     # Compute non-overlapping ticks for convergence episodes
     base_ticks = [0, 1000, 2000, 3000, 4000, 5000]
