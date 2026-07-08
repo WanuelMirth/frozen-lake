@@ -9,7 +9,7 @@ import json
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from agents.quest_agent import QUESTAgent
-from plot import generate_individual_plot
+from scripts.plot import generate_individual_plot
 
 # Configurations to evaluate (100 seeds, 5,000 episodes, 200 steps limit)
 CONFIGS = {

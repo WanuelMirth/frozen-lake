@@ -1,7 +1,7 @@
 # optuna_rmax.py
 import optuna
 from optuna.storages import JournalStorage, JournalFileStorage
-import main_rmax
+import scripts.main_rmax as main_rmax
 import os
 import pandas as pd
 import numpy as np

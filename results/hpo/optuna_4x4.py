@@ -1,7 +1,7 @@
 # optuna_4x4.py
 import optuna
 from optuna.storages import JournalStorage, JournalFileStorage
-import main
+import scripts.main as main
 import os
 import pandas as pd
 import numpy as np
